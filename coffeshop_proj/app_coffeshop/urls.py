@@ -3,5 +3,7 @@ from app_coffeshop import views
 
 
 urlpatterns = [
-    path(r'', views.PostListAPIView.as_view()),
+    path(r'product/', views.ProductListAPIView.as_view()),
+    path(r'optiont/', views.OptionListAPIView.as_view()),
+    path(r'order/', views.OrderListAPIView.as_view()),
 ]

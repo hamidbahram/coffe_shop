@@ -1,11 +1,25 @@
 from django.shortcuts import render
 from rest_framework import generics
-from app_coffeshop.serializers import ProductListSerializer
-from app_coffeshop.models import Product
+from app_coffeshop.serializers import ProductListSerializer, OptionListSerializer, OrderListSerializer
+from app_coffeshop.models import Product, Option, Order
 
 
-class PostListAPIView(generics.ListAPIView):
+class ProductListAPIView(generics.ListAPIView):
     serializer_class = ProductListSerializer
 
     def get_queryset(self, *args, **kwargs):
         return Product.objects.all()
+
+
+class OptionListAPIView(generics.ListAPIView):
+    serializer_class = OptionListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        return Option.objects.all()
+
+
+class OrderListAPIView(generics.ListAPIView):
+    serializer_class = OrderListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        return Order.objects.all()

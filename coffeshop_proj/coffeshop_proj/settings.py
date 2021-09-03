@@ -40,6 +40,9 @@ INSTALLED_APPS = [
 
     # main app
     'app_coffeshop',
+
+    # other app
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

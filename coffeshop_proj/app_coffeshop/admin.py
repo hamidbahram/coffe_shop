@@ -13,7 +13,7 @@ class AdminProject(admin.ModelAdmin):
             else:
                 return self.readonly_fields + ['user', 'product', '_status']
         else:
-            return self.readonly_fields + ['user', 'product', '_status']
+            return self.readonly_fields 
 
 
 admin.site.register(Product)

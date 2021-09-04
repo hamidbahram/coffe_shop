@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Option, Order
+from .models import Product, Option, Order, OptionValue
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -14,9 +14,20 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class OptionListSerializer(serializers.ModelSerializer):
+    value = serializers.SerializerMethodField()
+
+    def get_value(self, obj):
+        return OptionValueListSerializer(obj.optionvalue_set.all(), many=True).data
+
     class Meta:
         model = Option
-        exclude = ('product', )
+        fields = ['id', 'ingredients', 'value']
+
+
+class OptionValueListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OptionValue
+        fields = "__all__"
 
 
 class OrderListSerializer(serializers.ModelSerializer):

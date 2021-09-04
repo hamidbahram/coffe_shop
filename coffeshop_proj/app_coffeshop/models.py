@@ -24,6 +24,14 @@ class Option(models.Model):
         return "{}: {}".format(self.product, self.ingredients)
 
 
+class OptionValue(models.Model):
+    option = models.ForeignKey(Option, on_delete=models.CASCADE, null=True)
+    ingredients_value = models.CharField(max_length=15, null=True)
+
+    def __str__(self):
+        return "{}: {}".format(self.option, self.ingredients_value)
+
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)

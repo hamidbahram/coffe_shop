@@ -1,9 +1,17 @@
+from rest_framework import status
+from django.db import transaction
 from django.shortcuts import render
 from rest_framework import generics
-from app_coffeshop.serializers import ProductListSerializer, OptionListSerializer, OrderListSerializer, OptionValueListSerializer, UserSerializer
-from app_coffeshop.models import Product, Option, Order, OptionValue
 from django.contrib.auth.models import User
-
+from rest_framework.response import Response
+from app_coffeshop.models import Product, Option, Order, OptionValue
+from app_coffeshop.serializers import(
+    ProductListSerializer,
+    OptionListSerializer,
+    OrderListSerializer,
+    OptionValueListSerializer,
+    UserSerializer
+)
 
 
 class ProductListAPIView(generics.ListAPIView):
@@ -41,28 +49,22 @@ class UserListAPIView(generics.ListAPIView):
         return User.objects.all()
 
 
-
-
-from django.db import transaction
-from rest_framework import status
-from rest_framework.response import Response
-
-
-
 class UserCreate(generics.ListCreateAPIView):
     model = User
     serializer_class = UserSerializer
-    
+
     def get(self, *args, **kwargs):
         data = self.request.GET
         serializer = UserSerializer(data=data)
 
         with transaction.atomic():
             if serializer.is_valid():
-                user = User.objects.create(
-                    username=serializer.initial_data['username'], 
-                    email=serializer.initial_data['email'],
-                    password=serializer.initial_data['password']
-                )
+                serializer.validated_data
+                serializer.save()
+                # user = User.objects.create(
+                #     username=serializer.initial_data['username'],
+                #     email=serializer.initial_data['email'],
+                #     password=serializer.initial_data['password']
+                # )
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

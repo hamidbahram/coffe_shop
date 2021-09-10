@@ -9,4 +9,5 @@ urlpatterns = [
     path(r'optionvalue/', views.OrderListAPIView.as_view()),
     path(r'userlist/', views.UserListAPIView.as_view()),
     path(r'createuser/', views.UserCreate.as_view()),
+    path(r'orderuser/', views.UserOrder.as_view()),
 ]

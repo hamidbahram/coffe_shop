@@ -68,3 +68,27 @@ class UserCreate(generics.ListCreateAPIView):
                 # )
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserOrder(generics.ListCreateAPIView):
+    model = Order
+    serializer_class = OrderListSerializer
+
+    def get(self, *args, **kwargs):
+        data = self.request.GET
+        serializer = OrderListSerializer(data=data)
+        username = User.objects.get(username=serializer.initial_data['user'])
+        product = Product.objects.get(title=serializer.initial_data['product'])
+        import ipdb; ipdb.set_trace()
+        Order.objects.create(user=username, product=product)
+        # with transaction.atomic():
+        #     if serializer.is_valid():
+        #         serializer.validated_data
+        #         serializer.save()
+        #         # user = User.objects.create(
+        #         #     username=serializer.initial_data['username'],
+        #         #     email=serializer.initial_data['email'],
+        #         #     password=serializer.initial_data['password']
+        #         # )
+        #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        

@@ -33,9 +33,10 @@ class OptionValue(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
-    _status = models.PositiveSmallIntegerField(null=True, choices=STATUS_TYPE, default=1)
+    _status = models.PositiveSmallIntegerField(
+        null=True, choices=STATUS_TYPE, default=1)
 
     # getter
     @property

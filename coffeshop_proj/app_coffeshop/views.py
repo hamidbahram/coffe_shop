@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from app_coffeshop.models import Product, Option, Order, OptionValue
 from app_coffeshop.serializers import(
     ProductListSerializer,
@@ -12,7 +13,7 @@ from app_coffeshop.serializers import(
     OptionValueListSerializer,
     UserSerializer
 )
-from rest_framework.permissions import IsAuthenticated
+
 
 class ProductListAPIView(generics.ListAPIView):
     serializer_class = ProductListSerializer
@@ -72,31 +73,23 @@ class UserCreate(generics.ListCreateAPIView):
 class UserOrder(generics.ListCreateAPIView):
     model = Order
     serializer_class = OrderListSerializer
-    permission_classes = (IsAuthenticated,)  
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         data = self.request.GET
         serializer = OrderListSerializer(data=data)
-        # import ipdb; ipdb.set_trace()
-        username = User.objects.get(username=request.user.username)
-        product = Product.objects.get(title=serializer.initial_data['product'])
         try:
-            obj, created = Order.objects.get_or_create(user=username, product=product)
+            username = User.objects.get(username=request.user.username)
+            product = Product.objects.get(
+                title=serializer.initial_data['product'])
+            obj, created = Order.objects.get_or_create(
+                user=username, product=product)
             if created:
                 obj.save()
-                content = {'message': 'Hello, World!'}
-                return Response(content)
-        except Exception as e:
-            content = {'message': 'error!'}
-            return Response(content)
-        # with transaction.atomic():
-        #     if serializer.is_valid():
-        #         serializer.validated_data
-        #         serializer.save()
-        #         # user = User.objects.create(
-        #         #     username=serializer.initial_data['username'],
-        #         #     email=serializer.initial_data['email'],
-        #         #     password=serializer.initial_data['password']
-        #         # )
-        #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                content = {'message': 'sucsses'}
+                return Response(content, status=status.HTTP_201_CREATED)
+            content = {'message': 'error'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except Product.DoesNotExist:
+            content = {'message': 'DoesNotExist'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)

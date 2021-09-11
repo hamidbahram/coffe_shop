@@ -12,7 +12,7 @@ from app_coffeshop.serializers import(
     OptionValueListSerializer,
     UserSerializer
 )
-
+from rest_framework.permissions import IsAuthenticated
 
 class ProductListAPIView(generics.ListAPIView):
     serializer_class = ProductListSerializer
@@ -24,8 +24,7 @@ class ProductListAPIView(generics.ListAPIView):
 class OptionListAPIView(generics.ListAPIView):
     serializer_class = OptionListSerializer
 
-    def get_queryset(self, *args, **kwargs):
-        return Option.objects.all()
+    queryset = Option.objects.all()
 
 
 class OptionValueListAPIView(generics.ListAPIView):
@@ -73,14 +72,23 @@ class UserCreate(generics.ListCreateAPIView):
 class UserOrder(generics.ListCreateAPIView):
     model = Order
     serializer_class = OrderListSerializer
+    permission_classes = (IsAuthenticated,)  
 
-    def get(self, *args, **kwargs):
+    def get(self, request):
         data = self.request.GET
         serializer = OrderListSerializer(data=data)
-        username = User.objects.get(username=serializer.initial_data['user'])
+        # import ipdb; ipdb.set_trace()
+        username = User.objects.get(username=request.user.username)
         product = Product.objects.get(title=serializer.initial_data['product'])
-        import ipdb; ipdb.set_trace()
-        Order.objects.create(user=username, product=product)
+        try:
+            obj, created = Order.objects.get_or_create(user=username, product=product)
+            if created:
+                obj.save()
+                content = {'message': 'Hello, World!'}
+                return Response(content)
+        except Exception as e:
+            content = {'message': 'error!'}
+            return Response(content)
         # with transaction.atomic():
         #     if serializer.is_valid():
         #         serializer.validated_data
@@ -91,4 +99,4 @@ class UserOrder(generics.ListCreateAPIView):
         #         #     password=serializer.initial_data['password']
         #         # )
         #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

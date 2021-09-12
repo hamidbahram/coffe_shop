@@ -5,7 +5,8 @@ STATUS_TYPE = (
     (1, 'waiting'),
     (2, 'preparation'),
     (3, 'ready'),
-    (4, 'delivered.'),
+    (4, 'delivered'),
+    (5, 'cansel'),
 )
 
 

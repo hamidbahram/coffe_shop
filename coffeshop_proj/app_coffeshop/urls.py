@@ -10,4 +10,5 @@ urlpatterns = [
     path(r'userlist/', views.UserListAPIView.as_view()),
     path(r'createuser/', views.UserCreate.as_view()),
     path(r'orderuser/', views.UserOrder.as_view()),
+    path(r'canselorder/', views.CanselOrder.as_view()),
 ]

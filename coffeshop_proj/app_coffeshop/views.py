@@ -69,7 +69,6 @@ class UserCreate(generics.ListCreateAPIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except DatabaseError:
-            transaction.rollback()
             context = {"DatabaseError": "database is locked"}
             return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,6 +89,5 @@ class UserOrder(generics.ListCreateAPIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except DatabaseError:
-            transaction.rollback()
             context = {"DatabaseError": "database is locked"}
             return Response(context, status=status.HTTP_400_BAD_REQUEST)

@@ -1,5 +1,5 @@
 from rest_framework import status
-from django.db import transaction
+from django.db import transaction, DatabaseError, IntegrityError
 from django.shortcuts import render
 from rest_framework import generics
 from django.contrib.auth.models import User
@@ -53,21 +53,25 @@ class UserCreate(generics.ListCreateAPIView):
     model = User
     serializer_class = UserSerializer
 
-    def get(self, *args, **kwargs):
-        data = self.request.GET
+    def get(self, request):
+        data = request.GET
         serializer = UserSerializer(data=data)
-
-        with transaction.atomic():
-            if serializer.is_valid():
-                serializer.validated_data
-                serializer.save()
-                # user = User.objects.create(
-                #     username=serializer.initial_data['username'],
-                #     email=serializer.initial_data['email'],
-                #     password=serializer.initial_data['password']
-                # )
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            with transaction.atomic():
+                if serializer.is_valid():
+                    serializer.validated_data
+                    serializer.save()
+                    # user = User.objects.create(
+                    #     username=serializer.initial_data['username'],
+                    #     email=serializer.initial_data['email'],
+                    #     password=serializer.initial_data['password']
+                    # )
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except DatabaseError:
+            transaction.rollback()
+            context = {"DatabaseError": "database is locked"}
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserOrder(generics.ListCreateAPIView):
@@ -76,20 +80,16 @@ class UserOrder(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        data = self.request.GET
+        data = request.GET
         serializer = OrderListSerializer(data=data)
         try:
-            username = User.objects.get(username=request.user.username)
-            product = Product.objects.get(
-                title=serializer.initial_data['product'])
-            obj, created = Order.objects.get_or_create(
-                user=username, product=product)
-            if created:
-                obj.save()
-                content = {'message': 'sucsses'}
-                return Response(content, status=status.HTTP_201_CREATED)
-            content = {'message': 'error'}
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        except Product.DoesNotExist:
-            content = {'message': 'DoesNotExist'}
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            with transaction.atomic():
+                if serializer.is_valid():
+                    serializer.validated_data
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except DatabaseError:
+            transaction.rollback()
+            context = {"DatabaseError": "database is locked"}
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)

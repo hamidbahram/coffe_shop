@@ -31,16 +31,14 @@ class OptionValueListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrderListSerializer(serializers.ModelSerializer):
-    # user = serializers.ReadOnlyField(source='user.user')
-    # product = serializers.ReadOnlyField(source='product.product')
-    class Meta:
-        model = Order
-        fields = ('user', 'product')
-        # read_only_fields = ('user', 'product')
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email')
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Order
+        fields = ('user', 'product')

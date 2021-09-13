@@ -102,4 +102,5 @@ class CanselOrder(generics.UpdateAPIView):
         instance = instance.get(pk=request.GET.get('status'))
         instance._status = 5
         instance.save()
-        return Response({"message": "status updated successfully"})
+        context = {"message": "status updated successfully"}
+        return Response(context)

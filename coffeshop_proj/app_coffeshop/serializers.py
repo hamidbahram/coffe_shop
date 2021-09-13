@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Product, Option, Order, OptionValue
@@ -38,6 +39,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    product = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.username
+
+    def get_product(self, obj):
+        return obj.product.title
+
+
     class Meta:
         model = Order
         fields = ('user', 'product')

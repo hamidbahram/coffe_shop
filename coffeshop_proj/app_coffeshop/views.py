@@ -42,6 +42,14 @@ class OrderListAPIView(generics.ListAPIView):
         return Order.objects.all()
 
 
+class UserOrderListAPIView(generics.ListAPIView):
+    serializer_class = OrderListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        user = User.objects.get(username=self.request.user)
+        return user.order_set.all()
+
+
 class UserListAPIView(generics.ListAPIView):
     serializer_class = UserSerializer
 

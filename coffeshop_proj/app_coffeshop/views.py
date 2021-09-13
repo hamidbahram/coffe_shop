@@ -12,7 +12,6 @@ from app_coffeshop.serializers import(
     OrderListSerializer,
     OptionValueListSerializer,
     UserSerializer,
-    CanselOrderSerializer
 )
 
 
@@ -95,17 +94,12 @@ class UserOrder(generics.ListCreateAPIView):
 
 
 class CanselOrder(generics.UpdateAPIView):
-    serializer_class = CanselOrderSerializer
+    queryset = Order.objects.all()
     permission_classes = (IsAuthenticated,)
 
-    def update(self, request):
-        serializer = CanselOrderSerializer(data=request.GET)
-        try:
-            order = Order.objects.get(id=request.GET.get('order'))
-            if serializer.is_valid():
-                order._status = 5
-                order.save()
-                return Response({"message": "status updated successfully"})
-            return Response({"message": "failed", "details": serializer.errors})
-        except Order.DoesNotExist:
-            return Response({"message": "DoesNotExist"})
+    def update(self, request, *args, **kwargs):
+        instance = self.filter_queryset(self.get_queryset())
+        instance = instance.get(pk=request.GET.get('status'))
+        instance._status = 5
+        instance.save()
+        return Response({"message": "status updated successfully"})

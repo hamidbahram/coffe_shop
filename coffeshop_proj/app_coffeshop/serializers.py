@@ -41,9 +41,3 @@ class OrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('user', 'product')
-
-
-class CanselOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ('_status',)

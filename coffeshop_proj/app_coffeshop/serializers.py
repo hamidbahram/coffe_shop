@@ -48,7 +48,6 @@ class OrderListSerializer(serializers.ModelSerializer):
     def get_product(self, obj):
         return obj.product.title
 
-
     class Meta:
         model = Order
         fields = ('user', 'product')
